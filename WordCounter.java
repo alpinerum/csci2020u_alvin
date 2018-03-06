@@ -90,13 +90,15 @@ public class WordCounter {
 //            int oldCount = wordCounts.get(word);
 //            wordCounts.put(word, oldCount+1);
 //        }
+        //increments word count per file
         if (trainHamFreq.containsKey(word)){
             int oldCount = trainHamFreq.get(word);
             trainHamFreq.put(word, oldCount+1);
         }
+        //if key doesn't exist in the map, create new key
         else {
             //int oldCount = trainHamFreq.get(word);
-            wordCounts.put(word, 1);
+            //wordCounts.put(word, 1);
             trainHamFreq.put(word, 1);
         }
     }
@@ -109,7 +111,7 @@ public class WordCounter {
         }
         else {
             //int oldCount = trainHamFreq.get(word);
-            wordCounts.put(word, 1);
+            //wordCounts.put(word, 1);
             trainSpamFreq.put(word, 1);
         }
     }
@@ -120,6 +122,7 @@ public class WordCounter {
         //System.out.println("# of words: " + wordCounts.keySet().size());
         System.out.println("Saving word counts to " + outFile.getAbsolutePath());
         System.out.println("# of files with word: " + probHamMap.keySet().size());
+        //for debugging
         if (!outFile.exists()) {
             outFile.createNewFile();
             if (outFile.canWrite()) {
@@ -132,9 +135,9 @@ public class WordCounter {
                     String key = keyIterator.next();
                     float count = probHamMap.get(key);
 
-                    if (count >= minCount) {
-                        fileOut.println(key + ": " + count);
-                    }
+                    //if (count >= minCount) {
+                    fileOut.println(key + ": " + count);
+                    //}
                 }
 
                 fileOut.close();
@@ -154,21 +157,22 @@ public class WordCounter {
         //System.out.println("# of words: " + wordCounts.keySet().size());
         System.out.println("Saving word counts to " + outFile.getAbsolutePath());
         System.out.println("# of files with word: " + trainSpamFreq.keySet().size());
+        //for debugging
         if (!outFile.exists()) {
             outFile.createNewFile();
             if (outFile.canWrite()) {
                 PrintWriter fileOut = new PrintWriter(outFile);
 
-                Set<String> keys = probHamMap.keySet();
+                Set<String> keys = probSpamMap.keySet();
                 Iterator<String> keyIterator = keys.iterator();
 
                 while (keyIterator.hasNext()) {
                     String key = keyIterator.next();
-                    float count = probHamMap.get(key);
+                    float count = probSpamMap.get(key);
 
-                    if (count >= minCount) {
-                        fileOut.println(key + ": " + count);
-                    }
+                    //if (count >= minCount) {
+                    fileOut.println(key + ": " + count);
+                    //}
                 }
 
                 fileOut.close();
@@ -214,14 +218,19 @@ public class WordCounter {
     }
 
     public void probSW() {
+        //calculates probability of string occuring in spam compared to ham emails
         for (Map.Entry<String, Float> entry : probSpamMap.entrySet()) {
+            float prob = 1.0f;
             String word = entry.getKey();
+            //if word exists in probHamMap, use probability equation.
             if (probHamMap.containsKey(word)) {
-                float prob = probSpamMap.get(word) / (probSpamMap.get(word) + probHamMap.get(word));
+                prob = probSpamMap.get(word) / (probSpamMap.get(word) + probHamMap.get(word));
             }
             else {
-                float prob = 1.0f;
+                ;
             }
+            //input values into probability map for spam
+            probSpam.put(word, prob);
         }
     }
     public static void main(String[] args) {
